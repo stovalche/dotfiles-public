@@ -1,0 +1,8 @@
+#!/bin/sh
+
+connected_iface="$(ip route | grep '^default' | awk '{print $5}' | head -n1 | xargs)"
+if [ "$connected_iface"  == "" ]; then
+  echo "  offline  "
+else
+  echo ""
+fi

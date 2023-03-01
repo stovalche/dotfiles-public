@@ -1,0 +1,108 @@
+#!/bin/sh
+
+coins="BTC\nETH\nUSDT\nBNB"
+coininfo=""
+
+# site (rate.sx) usage
+# - for a line of a price in USD
+#   # curl rate.sx/1COIN_NAME
+# - for a graph
+#   # curl rate.sx/coin_NAME
+update_info(){
+  date=$(curl -sf rate.sx | awk 'FNR==33' | tr '.' ' ' | tr -d '\[' | tr 'm' ' ' | awk '{print $3" "$4}')
+  for coin in $(echo -e $coins); do
+    coinprice="$(curl -sf rate.sx/1$coin)"
+    coinpercentagein1h=$(curl -sf rate.sx/$coin | awk '/change/{print $9}' | tr -d '()\[m' | sed 's/.*+//g' | sed 's/%.*//g' | xargs)
+
+    # if negative of positive
+    if [[ $(echo $coinpercentagein1h | grep '-') ]]; then
+      coinpercentagein1h="-$(echo "$coinpercentagein1h" | sed 's/.*-//g')"
+    else
+      coinpercentagein1h="+$coinpercentagein1h"
+    fi
+    info="$info\n$(echo -e "$coin = \$$coinprice\t$coinpercentagein1h% (1h)\n")"
+  done
+  
+  # bar info
+  coinPercentage="$(curl -sf rate.sx/"$1" | awk '/change/{print $9}' | tr -d '(%)+' | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g")"
+  decCoinPercentage="$(echo $coinPercentage | tr '.' ' ' | awk '{print $1}')"
+  # write to cache file
+  if [ "$coinPercentage" != "" ]; then
+    # scaling float percentage from x.xx to x.x
+    if [[ $(echo $coinPercentage | grep "0\.") ]]; then
+      # if negative or positive
+      # scale from x.xx to .x and change a float form from .x to 0.x
+      if [[ $(echo $coinPercentage | grep '-') ]]; then
+        coinPercentage=$(echo "scale=1; $coinPercentage * 10 / 10" | bc -q)
+        if [ "$coinPercentage" == "0" ]; then
+          coinPercentage="%{F#d30102}0.$(echo $coinPercentage | sed 's/.*-//g')%%{F#eee8d5}"
+        else
+          coinPercentage="%{F#d30102}0$(echo $coinPercentage | sed 's/.*-//g')%%{F#eee8d5}"
+        fi
+      else
+        coinPercentage=$(echo "scale=1; $coinPercentage * 10 / 10" | bc -q)
+        if [ "$coinPercentage" == "0" ]; then
+          coinPercentage="0.$coinPercentage"
+        else
+          coinPercentage="0$coinPercentage%"
+        fi
+      fi
+    else
+      coinPercentage=$(echo "scale=1; $coinPercentage * 10 / 10" | bc -q)
+      # if negative or higher that 50% or any positive
+      if [[ $(echo $coinPercentage | grep '-') ]]; then
+        coinPercentage="%{F#d30102}$(echo $coinPercentage | sed 's/.*-//g')%%{F#eee8d5}"
+      elif [ $decCoinPercentage -ge 50 ]; then
+        coinPercentage="%{F#268bd2}$(echo $coinPercentage)%%{F#eee8d5}"
+      else
+        coinPercentage="$coinPercentage%"
+      fi
+    fi
+    echo " $(echo -e "on $date\n$info")" > "$2"
+    echo "$coinPercentage" >> "$2"
+  else
+    coinPercentage="$(cat "$2" | awk 'FNR==7{print $1}')"
+  fi
+}
+
+# cache file param
+if [ -d $HOME/.cache/ ]; then
+  dirFile="$HOME/.cache/cryptoinfo.log"
+else
+  dirFile="$HOME/cryptoinfo.log"
+fi
+if [ -f "$dirFile" ]; then
+  echo -ne ""
+else
+  update_info "btc" "$dirFile"
+fi
+
+# command
+if [ "$1" == "notify" ]; then
+  title="$(cat $dirFile | awk 'FNR==1')"
+  body="$(cat $dirFile | awk 'FNR==2{for(i=1;i<5;i++){getline; print $1" "$2" "$3"\t"$4" "$5}}')"
+  notify-send -r 222 "$title" "$body"
+elif [ "$1" == "update" ]; then
+  if [ "$2" != "" ]; then
+    coininfo="$2"
+  elif [ "$coininfo" != "" ]; then
+    coininfo="$coininfo"
+  else
+    # return btc if no argument
+    coininfo="btc"
+  fi
+
+  # updating
+  update_info "$coininfo" "$dirFile"
+
+  # write to bar
+  echo "   $coinPercentage"
+else
+  echo "Usage: cryptocurrency <command>"
+  echo ""
+  echo "Command:"
+  echo "notify      notification about a coin price and percentage,"
+  echo "update      updating some coins information and print a mentioned coin price."
+  echo "            Example:"
+  echo "            cryptocurrency update btc"
+fi

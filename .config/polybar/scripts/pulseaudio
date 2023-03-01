@@ -1,0 +1,22 @@
+#!/bin/bash
+
+get_volume=$(($(($(pacmd list-sinks | awk '/\tvolume:/ { print $5 }' | tail -n+$((sink_nr + 1)) | head -n1 | cut -d '%' -f 1) + 0)) + 0))
+get_state=$(pacmd list-sinks | awk '/muted/ { print $2 }' | tail -n+$((sink_nr + 1)) | head -n1)
+
+if [ $get_volume -le 33 ]; then
+  vol_icon=""
+elif [ $get_volume -le 65 ]; then
+  vol_icon=""
+else
+  vol_icon=""
+fi
+
+if [ $get_volume -le 100 ]; then
+  if [ $get_state == 'yes' ]; then
+    echo "%{F#93a1a1}  $get_volume "
+  else
+    echo "%{F#eee8d5} $vol_icon $get_volume "
+  fi
+else
+  echo "%{F#93a1a1}  $get_volume "
+fi

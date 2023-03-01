@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# sxhkd 
+pgrep -x sxhkd > /dev/null || sxhkd &
+
+# notification daemon
+dunst &
+
+# compositor
+picom -b --experimental-backends &
+
+# polybar
+$HOME/.config/polybar/launch.sh
+
+# wallpaper
+feh --bg-scale ~/Pictures/wallpaper/* --no-fehbg 
+
+# todo notification
+$HOME/Scripts/shell/notify-todo

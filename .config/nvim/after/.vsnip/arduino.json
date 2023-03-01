@@ -1,0 +1,103 @@
+{
+  "setup": {
+    "prefix": "setup",
+    "body":[
+      "void setup(){$0",
+      "}"
+    ] 
+  },
+  "loop": {
+    "prefix": "loop",
+    "body":[
+      "void loop(){$0",
+      "}"
+    ]
+  },
+  "digitalWrite - High": {
+    "prefix": "dwh",
+    "body":[
+      "digitalWrite(${1:13}, ${2:HIGH});"
+    ]
+  },
+  "digitalWrite - Low": {
+    "prefix": "dwl",
+    "body":[
+      "digitalWrite(${1:13}, ${2:LOW});"
+    ]
+  },
+  "digitalRead": {
+    "prefix": "dr",
+    "body":[
+      "digitalRead(${1:13});"
+    ]
+  },
+  "analogRead": {
+    "prefix": "ar",
+    "body":[
+      "analogRead(${1:13});"
+    ]
+  },
+  "pinMode - Input": {
+    "prefix": "pmi",
+    "body":[
+      "pinMode(${1:13}, ${2:INPUT});"
+    ]
+  },
+  "pinMode - Output": {
+    "prefix": "pmo",
+    "body":[
+      "pinMode(${1:13}, ${2:OUTPUT});"
+    ]
+  },
+  "map(x, 0, 1, 2, 3)": {
+    "prefix": "map",
+    "body":[
+      "map(${1:0}, ${2:0}, ${3:0}, ${4:0}, ${5:0});"
+    ]
+  },
+  "serial read": {
+    "prefix": "sr",
+    "body": [
+      "Serial.read($0);"
+    ]
+  },
+  "serial print": {
+    "prefix": "print",
+    "body":[
+      "Serial.print($0);"
+    ]
+  },
+  "serial println": {
+    "prefix": "println",
+    "body":[
+      "Serial.println($0);"
+    ]
+  },
+  "serial begin":{
+    "prefix": "begin",
+    "body":[
+      "Serial.begin($0);"
+    ]
+  },
+  "if(conditon)": {
+    "prefix": "if",
+    "body":[
+      "if($0){",
+      "}"
+    ]
+  },
+  "else if(condition)": {
+    "prefix": "elif",
+    "body":[
+      "else if($0){",
+      "}"
+    ]
+  },
+  "else{}": {
+    "prefix": "else",
+    "body":[
+      "else{",
+      "}"
+    ]
+  }
+}

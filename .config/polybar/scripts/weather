@@ -1,0 +1,98 @@
+#!/bin/sh
+
+if [ "$1" = "" ]; then
+  current_location="$(curl -sf wttr.in | awk '/^Weather/ {print $3}')"
+  if curl -sf wttr.in | awk 'FNR==3 {print tolower($4)}' | grep -q '\['; then
+    current_condition_info="$(curl -sf wttr.in | awk 'FNR==3 {print $5" "$6" "$7" "$8}' | xargs | tr -d ' ')"
+    current_condition="$(curl -sf wttr.in | awk 'FNR==3 {print tolower($5""$6)}')"
+  else
+    current_condition_info="$(curl -sf wttr.in | awk 'FNR==3 {print $4" "$5" "$6" "$7" "$8}' | xargs | tr -d ' ')"
+    current_condition="$(curl -sf wttr.in | awk 'FNR==3 {print tolower($4""$5)}')"
+  fi
+  if [ "$current_condition" = "" ]; then
+    current_condition="$(curl -sf wttr.in | awk 'FNR==3 {print tolower($1$2$3$4)}' | tr ',' ' ' | awk '{print $1}')"
+  fi
+  temperature=$(curl -sf wttr.in | awk 'FNR==4 {print $2$3$4$5$6$7$8$9}' | sed 's/+/ /g' | awk '{print $2}' | sed 's/(.*)//g' | tr "m" " " | awk '{print $1}')
+  current_temperature="$(echo $temperature | awk '{ sum += $0 } END { print sum }')"
+fi
+current_condition="$(echo $current_condition | tr -d ',' | xargs)"
+
+# 
+# logfile
+# this log file is also using to enable weather reports history
+# that can be show the current weather by clicking the icon on the bar 
+# with command 'weather info'
+# which is faster than directly checking the 'curl wttr.in' information
+#
+if [ -d $XDG_CACHE_HOME ]; then
+  logfile="$XDG_CACHE_HOME/weatherreport.log"
+elif [ -d $HOME/.cache/ ]; then
+  logfile="$HOME/.cache/weatherreport.log"
+else 
+  logfile="$HOME/weatherreport.log"
+fi
+if [ -f $logfile ]; then
+  echo -ne ""
+else
+  touch $logfile
+fi
+before_location="$(cat $logfile | awk 'FNR==1{print $1}' | xargs)"
+before_condition="$(cat $logfile | awk 'FNR==2{print $1}' | xargs)"
+before_temperature="$(cat $logfile | awk 'FNR==3{print $1}' | xargs)"
+
+get_icon() {
+  case "$1" in
+    sunny)                              icon="滛";;
+    clear)                              icon="滛";;
+    cloudy)                             icon="摒";;
+    fair)                               icon="杖";;
+    fog)                                icon="敖";;
+    haze)                               icon="敖";;
+    heavyrainshowers)                   icon="晴";;
+    heavysleetandthunder)               icon="ﭼ ";;
+    heavysleetshowersandthunder)        icon="ﭼ ";;
+    heavysnow)                          icon="流";;
+    heavysnowandthunder)                icon="ﭽ ";;
+    partlycloudy)                       icon="杖";;
+    rain)                               icon="殺";;
+    rainandthunder)                     icon="ﭼ ";;
+    rainshowers)                        icon="歹";;
+    snow)                               icon="流";;
+    snowandthunder)                     icon="ﭽ ";;
+    patchyrain)                         icon="晴";;
+    lightrain)                          icon=" ";;
+    lightrainshowers)                   icon=" ";;
+    lightrainshowersandthunder)         icon=" ";;
+    lightsleet)                         icon=" ";;
+    lightsnowandthunder)                icon=" ";;
+    lightssnowshowersandthunder)        icon=" ";;
+    *)                                  icon="❓";
+  esac
+  echo "$icon"
+}
+current_icon=$(get_icon "$current_condition")
+celcius_icon="°C"
+
+update_info(){
+  sleep 22
+  if [ -f /sbin/dunst ] || [ -f /usr/bin/dunst ] ; then
+    notify-send -r 777 -u normal "$current_icon  Weather report" "$current_location $current_condition_info, $current_temperature$celcius_icon."
+  fi
+  echo -e "$current_location\n$current_condition\n$current_temperature\n\n$current_icon  Weather report\n$current_location $current_condition_info, $current_temperature$celcius_icon." > $logfile
+}
+
+if [ "$1" = "" ]; then
+  if [ "$current_condition" != "" ] && [ "$current_temperature" != "" ] && [ "$current_location" != "" ]; then
+    if [ "$before_location" != "$current_location" ] || [ "$before_condition" != "$current_condition" ] || [ "$before_temperature" != "$current_temperature" ]; then
+      update_info
+    fi
+    echo -e "  $current_icon $current_temperature$celcius_icon"
+  else
+    #echo "  " # clickable
+    echo "" # not clickable
+  fi
+elif [ "$1" = "info" ]; then
+  title="$(cat ~/.cache/weatherreport.log | awk 'FNR==5{print $1"  "$2" "$3}')"
+  info="$(cat ~/.cache/weatherreport.log | awk 'FNR==6{print $1" "$2" "$3}')"
+  notify-send -r 777 -u normal "$title" "$info"
+fi

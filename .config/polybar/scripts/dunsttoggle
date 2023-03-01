@@ -1,0 +1,19 @@
+#!/bin/sh
+
+write_info(){
+  if [ "$(dunstctl is-paused)" = "true" ]; then
+    echo "%{F#93a1a1}  "
+  else
+    echo "  "
+  fi
+}
+
+case "$1" in
+  --toggle)
+    dunstctl set-paused toggle;
+    write_info
+    ;;
+  *)
+    write_info
+    ;;
+esac

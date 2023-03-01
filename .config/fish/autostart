@@ -1,0 +1,6 @@
+#!/bin/sh
+
+status="$(echo "$(pgrep alacritty)" | xargs )"
+if [ "$status" != "" ]; then
+  neofetch
+fi

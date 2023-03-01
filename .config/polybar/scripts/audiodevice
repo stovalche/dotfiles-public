@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if_bluez_name="$(pacmd list-sinks | awk '/*/ {for(i=1; i<=7; i++) {getline; print}}' | awk '/name/{print $2}' | tr -d "<,>" | grep bluez)"
+if_headphones_name="$(pacmd list-sinks | awk '/*/ {for(i=1; i<=63; i++) {getline; print}}' | awk '/active/{print $3}' | tr -d '<>-' | grep headphones)"
+
+if [ "$if_bluez_name" != "" ]; then
+  echo " "
+elif [ "$if_headphones_name" != "" ]; then
+  echo " "
+else
+  echo ""
+fi

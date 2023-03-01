@@ -1,0 +1,6 @@
+require('base')
+require('maps')
+require('highlights')
+require('netrw')
+require('runner')
+require('plugins')

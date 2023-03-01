@@ -1,0 +1,21 @@
+/word_to_search /\<word_seperate by a space_to_search\>
+/\\\\\" (to search \\" which is the \ to extrass)
+/\cword_to_search_ without sensitive case
+/\Cword_to_search_ with sensitive case
+
+to change the searched word:
+:%s/word_to_search/word_to_replace    -->(is to replace all the over the first founded row of word in the file)
+:%s/word_to_search/word_to_replace/g  -->(where 'g' is to replace all the searched word over the line and the row)
+:1,4s/word_to_search/word_to_replace  -->(change the word around line 1st to 4th)
+
+to disable higlighting on a searched words we can do some commands:
+:noh
+:nohl
+:set nohlsearch
+to enable back:
+:set hlsearch
+
+to always disable highliting:
+:set noincsearch
+to turn it back on:
+:set incsearch

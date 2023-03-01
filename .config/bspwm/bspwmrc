@@ -1,0 +1,42 @@
+#!/bin/sh
+
+current_monitor=""
+ws=1
+reload_setup(){
+  if type "xrandr"; then
+    for monitor in $(xrandr --query | grep " connected" | cut -d" " -f1); do
+      if [ "$monitor" != "$current_monitor" ]; then
+        if [[ $(echo "$monitor" | grep "HDMI") ]]; then
+          bspc wm -O "$monitor" "$current_monitor"
+        else
+          bspc monitor "$monitor" -d $ws $(( $ws + 1 )) $(( $ws + 2 )) $(( $ws + 3 )) $(( $ws + 4 ))
+          ws=$(( $ws + 5 ))
+        fi
+      fi
+      current_monitor="$monitor"
+    done
+  fi
+}
+reload_setup
+
+bspc config border_width            1
+bspc config window_gap              15
+bspc config split_ratio             0.5
+bspc config borderless_monocle      true
+bspc config gapless_monocle         true
+bspc config focus_follows_pointer   true
+
+bspc config normal_border_color     "#3a3e3f"
+bspc config focused_border_color     "#3a3e3f"
+
+bspc rule -a "*:Toolkit:Picture-in-Picture" state=floating sticky=on follow=off focus=on rectangle=400x200+1366+768 center=true
+bspc rule -a "*" state=floating focus=on center=true
+bspc rule -a Gimp state=tiled desktop='^5'
+bspc rule -a Wireshark state=tiled desktop='^5'
+bspc rule -a Screenkey manage=off
+bspc rule -a Alacritty state=floating focus=on follow=on rectangle=825x526+1366+768 center=true
+bspc rule -a Pcmanfm state=tiled focus=on follow=on
+bspc rule -a firefox state=tiled focus=on follow=on
+
+# autostart
+$HOME/.config/bspwm/autostart

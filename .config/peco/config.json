@@ -1,0 +1,10 @@
+{
+  "Use256Color": true,
+  "Style": {
+    "Basic": ["on_default", "grey"],
+    "SavedSelection": ["bold", "on_yellow", "8"],
+    "Selected": ["on_8", "14"],
+    "Query": ["grey", "on_default"],
+    "Matched": ["blue", "on_default","bold"]
+  }
+}

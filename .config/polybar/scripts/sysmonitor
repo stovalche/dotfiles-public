@@ -1,0 +1,55 @@
+#!/bin/bash
+#!/bin/sh
+
+# Highlights
+alert="%{F#b58900}"
+warn="%{F#d30102}"
+off="%{F#eee8d5}"
+
+# CPU Temperature
+CPU_temper="$(sensors | awk '/^temp1/ {print $2}' | awk '(NR>1)' | tr -d +)"
+
+# Memory Percentage
+Mem_Used="$(free -m | awk '/^Mem:/ {print $3}' | tr -d Gi)"
+Mem_Total="$(free -m | awk '/^Mem:/ {print $2}' | tr -d Gi)"
+Divide=$(echo "scale=3 ; $Mem_Used / $Mem_Total" | bc)
+Percentage=$(echo "scale=3 ; $Divide * 100" | bc )
+Mem_Percentage="$(echo $Percentage | awk '{print substr($1,1,4)}')%"
+
+# Disk Usage Percentage
+Disk_Usage_Percentage=$(df --output=pcent | awk 'FNR==4{print $0}')
+
+# Highlighting CPU_temper
+CPU_temper_x10=$(echo $CPU_temper | tr -d .°C )
+if [ $CPU_temper_x10 -gt 750 ]; then
+  CPU_temper="$warn$CPU_temper$off"
+elif [ $CPU_temper_x10 -gt 650 ]; then
+  CPU_temper="$alert$CPU_temper$off"
+fi
+
+# Highlighting Mem_Percentage
+Mem_Percentage_x100="$(echo $Mem_Percentage | tr -d .% )"
+if [ $Mem_Percentage_x100 -gt 7500 ]; then
+  Mem_Percentage="$warn$Mem_Percentage$off"
+elif [ $Mem_Percentage_x100 -gt 5000 ]; then
+  Mem_Percentage="$alert$Mem_Percentage$off"
+fi
+
+# Highlighting Disk_Usage_Percentage
+Disk_Usage_Percentage_x1="$(echo $Disk_Usage_Percentage | tr -d %)"
+if [ $Disk_Usage_Percentage_x1 -gt 95 ]; then
+  Disk_Usage_Percentage="$warn$Disk_Usage_Percentage$off"
+elif [ $Disk_Usage_Percentage_x1 -gt 85 ]; then
+  Disk_Usage_Percentage="$alert$Disk_Usage_Percentage$off"
+fi
+
+# printing with an option
+if [ "$1" == "3" ]; then
+  echo "   $Mem_Percentage  $Disk_Usage_Percentage"
+elif [ "$1" == "2" ]; then
+  echo "   $CPU_temper$sedder   $Mem_Percentage"
+elif [ "$1" == "1" ]; then
+  echo "   $CPU_temper$sedder"
+else
+  echo "   $CPU_temper$sedder   $Mem_Percentage  $Disk_Usage_Percentage"
+fi
