@@ -2,7 +2,7 @@ Files_[0]="$HOME/.xinitrc,
            $HOME/.xprofile"
 Files_[1]="$HOME/.bashrc"
 Files_Destination_[0]=""
-Files_Destination_[1]="bash_env"
+Files_Destination_[1]="bash-env"
 
 Dirs_[0]="$HOME/.config/fish/,
           $HOME/.config/nvim/,
