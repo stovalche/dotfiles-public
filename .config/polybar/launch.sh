@@ -12,7 +12,7 @@ reload_setup(){
       if [ "$monitor" != "$current_monitor" ]; then
         MONITOR="$monitor"
         polybar --reload topbar &
-        polybar --reload botbar &
+        #polybar --reload botbar &
       fi
       current_monitor="$monitor"
     done

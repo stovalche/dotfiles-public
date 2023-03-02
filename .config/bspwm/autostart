@@ -13,7 +13,7 @@ picom -b --experimental-backends &
 $HOME/.config/polybar/launch.sh
 
 # wallpaper
-feh --bg-scale ~/Pictures/wallpaper/* --no-fehbg 
+feh --bg-fill ~/Pictures/wallpaper/* --no-fehbg 
 
 # todo notification
 $HOME/Scripts/shell/notify-todo

@@ -54,7 +54,7 @@ mouse:
 # ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
 window:
-  opacity: 0.5
+  opacity: 0.4
   title: Alacritty
   startup_mode: Windowed
   dynamic_title: false

@@ -14,11 +14,12 @@ Dirs_[0]="$HOME/.config/fish/,
           $HOME/.config/peco/,
           $HOME/.config/bspwm/,
           $HOME/.config/picom/,
-          $HOME/.config/dunst/"
+          $HOME/.config/dunst/,
+          $HOME/.config/neofetch/"
 Dirs_Destination_[0]=".config"
 
-if [ $Cmd = "--head" ]; then
-  if [ $Cmd2 = "private" ]; then
+if [ "$Cmd" = "--head" ]; then
+  if [ "$Cmd2" = "private" ]; then
     Files_[2]="$HOME/Android/Sdk/platforms/android-30/skins/IphoneX_avd_skin/*"
     Files_Destination_[2]="Android/Sdk/platforms/android-30/skins/androidx"
     Dirs_[1]="$HOME/Scripts/"
