@@ -67,13 +67,13 @@ function prompt_virtual_env -d "Display Python virtual environment"
 end
 
 function prompt_user -d "Display current user if different from $default_user"
+  set -l FGnewline 073642
+
   # if superuser (uid == 0)
-  set -l BG
-  set -l FG
   set -l uid (id -u $USER)
   if [ $uid -eq 0 ]
-    set BG d30102
-    set FG eee8d5
+    set BG 002b36
+    set FG d30102
   else
     set BG 002b36
     set FG 657b83
@@ -83,8 +83,13 @@ function prompt_user -d "Display current user if different from $default_user"
     echo ""
     if [ "$USER" != "$default_user" -o -n "$SSH_CLIENT" ]
       set USER_PROMPT (whoami)
-      set_color $BG
+      set_color $FGnewline
       echo -ne "╭─"
+      set_color -b $FGnewline
+      echo -ne " "
+      set_color $FGnewline
+      set_color -b $BG
+      echo -ne ""
       prompt_segment $BG $FG $USER_PROMPT
     end
   end
@@ -153,18 +158,15 @@ function prompt_hg -d "Display mercurial state"
 end
 
 function prompt_finish -d "Close open segments"
+  set -l FGnewline 073642
+
   if [ -n $current_bg ]
     set_color -b normal
     set_color $current_bg
     echo -n "$segment_separator "
 
     echo ""
-    set -l uid (id -u $USER)
-    if [ $uid -eq 0 ]
-      set_color d30102
-    else
-      set_color 073642
-    end
+    set_color $FGnewline
     echo -n "╰─"
     set_color 5fff00
     echo -n "❯ "
