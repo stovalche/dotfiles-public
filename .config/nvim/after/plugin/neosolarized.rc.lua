@@ -46,6 +46,9 @@ Group.new('FloatBorder', colors.base01)
 Group.new('LspInfoBorder', colors.cyan)
 Group.new('LspSagaHoverBorder', colors.base01)
 
+-- lspsaga
+Group.new('SagaShadow', colors.NONE, colors.base02)
+
 -- cmp
 Group.new('CmpItemMenu', colors.base01, colors.NONE, styles.italic )
 Group.new('CmpItemAbbr', colors.base01, colors.NONE, styles.NONE)
