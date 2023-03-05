@@ -25,7 +25,7 @@ lualine.setup {
         shorting_target = 15,   -- Shortens path to leave 40 spaces in the window
                                 -- for other components. (terrible name, any suggestions?)
         symbols = {
-          modified = '',       -- Text to show when the file is modified.
+          modified = '●',       -- Text to show when the file is modified.
           readonly = '[RO]',    -- Text to show when the file is non-modifiable or readonly.
           unnamed = 'no name',  -- Text to show for unnamed buffers.
           newfile = 'new'

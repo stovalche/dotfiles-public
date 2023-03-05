@@ -10,7 +10,7 @@ bufferline.setup({
     show_close_icon = false,
     color_icons = true,
     enforce_regular_tabs = true,
-    modified_icon = '',
+    modified_icon = '●',
   },
   highlights = {
     separator = {

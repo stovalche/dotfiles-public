@@ -19,8 +19,16 @@ function peco_change_directory
     echo $HOME/.config/
     ghq list -p
     ls -ad $HOME/.dotfiles/* |grep -v \.git
+    ls -ad $HOME/.dotfiles/*/* |grep -v \.git
+    ls -ad $HOME/.dotfiles/*/*/* |grep -v \.git
     ls -ad $HOME/.config/* |grep -v \.git
+    ls -ad $HOME/.config/*/* |grep -v \.git
+    ls -ad $HOME/.config/*/*/* |grep -v \.git
     ls -ad $HOME/Scripts/* |grep -v \.git
-    la -ad $HOME/Project/* |grep -v \.git
+    ls -ad $HOME/Scripts/*/* |grep -v \.git
+    ls -ad $HOME/Scripts/*/*/* |grep -v \.git
+    ls -ad $HOME/Project/* |grep -v \.git
+    ls -ad $HOME/Project/*/* | grep -v \.git
+    ls -ad $HOME/Project/*/*/* | grep -v \.git
   end | sed -e 's/\/$//' | awk '!a[$0]++' | _peco_change_directory $argv
 end

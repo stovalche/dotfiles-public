@@ -17,7 +17,7 @@ lspconfig.setup {
     "pyright",
     "clangd",
     "tsserver",
-    "sumneko_lua",
+    "lua_ls",
     "cssls",
     "html",
     "omnisharp_mono",

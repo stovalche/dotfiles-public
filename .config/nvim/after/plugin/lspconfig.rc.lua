@@ -20,18 +20,16 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
   vim.lsp.diagnostic.on_publish_diagnostics, {
     update_in_insert = true,
     underline = true,
-    virtual_text = {
-      spacing = 0,
-      prefix = ' '
-    },
     severity_sort = true
   }
 )
 
 vim.diagnostic.config({
   virtual_text = {
+    source = "if_many",
+    spacing = 1,
     prefix = '●'
-  },-- true or false could be use 
+  },
   signs = true,
   update_in_insert = true,
   severity_sort = false,
@@ -102,7 +100,7 @@ nvim_lsp.tailwindcss.setup {
   capabilities = capabilities
 }
 
-nvim_lsp.sumneko_lua.setup {
+nvim_lsp.lua_ls.setup {
   settings = {
     Lua = {
       runtime = {

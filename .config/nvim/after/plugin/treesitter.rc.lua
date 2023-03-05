@@ -5,19 +5,17 @@ require'nvim-treesitter.configs'.setup {
   ensure_installed = {
     "c",
     "cpp",
+    "c_sharp",
     "lua",
     "python",
     "java",
     "vim",
     "html",
     "javascript",
-    "yaml",
     "php",
-    "vim",
-    "c_sharp"
+    "fish",
+    "bash"
   },
-  sync_install = true,
-  auto_install = false,
   indent = {
     enable = true,
     disable = {
@@ -27,6 +25,13 @@ require'nvim-treesitter.configs'.setup {
       "lua"
     },
   },
+  highlight = {
+    enable = true,
+    disable = {},
+  },
+    autotag = {
+    enable = true,
+  },
   incremental_selection = {
     enable = true,
     keymaps = {
@@ -35,17 +40,13 @@ require'nvim-treesitter.configs'.setup {
       scope_incremental = "gtt",
       node_decremental = "gnk",
     },
-  },
-  highlight = {
-    enable = true,
-    disable = {},
-  },
-    autotag = {
-    enable = true,
   }
 }
+
 local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
 parser_config.tsx.filetype_to_parsername = {
   "html",
   "css",
+  "javascript",
+  "typerscript.tsx"
 }
