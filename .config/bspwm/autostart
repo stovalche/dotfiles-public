@@ -1,13 +1,13 @@
 #!/bin/sh
 
+# compositor
+picom -b --experimental-backends &
+
 # sxhkd 
 pgrep -x sxhkd > /dev/null || sxhkd &
 
 # notification daemon
 dunst &
-
-# compositor
-picom -b --experimental-backends &
 
 # polybar
 $HOME/.config/polybar/launch.sh

@@ -24,12 +24,10 @@ current_condition="$(echo $current_condition | tr -d ',' | xargs)"
 # with command 'weather info'
 # which is faster than directly checking the 'curl wttr.in' information
 #
-if [ -d $XDG_CACHE_HOME ]; then
-  logfile="$XDG_CACHE_HOME/weatherreport.log"
-elif [ -d $HOME/.cache/ ]; then
+if [ -d $HOME/.cache/ ]; then
   logfile="$HOME/.cache/weatherreport.log"
 else 
-  logfile="$HOME/weatherreport.log"
+  logfile="$HOME/.weatherreport.log"
 fi
 if [ -f $logfile ]; then
   echo -ne ""

@@ -18,3 +18,6 @@ if type -q exa
     *.conf=38;5;249:*.vim=38;5;46:di=38;5;75:lp=38;5;243:Vagrantfile=33:*.c=38;5;27:\
     *.cpp=38;5;27:*.sh=32:*.lua=34:ex=38;5;5"
 end
+
+# start sway
+# $HOME/.config/sway/sway_launch

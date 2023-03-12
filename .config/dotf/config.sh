@@ -25,7 +25,8 @@ Dirs_[1]="$HOME/.config/fish/,
           $HOME/.config/picom/,
           $HOME/.config/dunst/,
           $HOME/.config/neofetch/,
-          $HOME/.config/rofi/"
+          $HOME/.config/rofi/,
+          $HOME/.config/sway"
 Dirs_Destination_[1]=".config"
 
 LogMax=50

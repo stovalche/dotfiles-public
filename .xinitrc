@@ -1,12 +1,6 @@
 #!/bin/sh
 
-# udiskie
-udiskie -s -A -f pcmanfm -q &
-
-# set cursor shape
-xsetroot -cursor_name left_ptr
-
-# monitor setup (xrandr, bspwm, polybar)
+# monitor setup for xrandr
 current_monitor=""
 reload_setup(){
   if type "xrandr"; then
@@ -20,7 +14,14 @@ reload_setup(){
 }
 reload_setup
 
-# bspwm
-exec bspwm
+# udiskie
+udiskie -s -A -f pcmanfm -q &
 
+# set cursor shape
+xsetroot -cursor_name left_ptr
+
+# set xkb map
 setxkbmap -layout us
+
+# bspwm start
+exec bspwm

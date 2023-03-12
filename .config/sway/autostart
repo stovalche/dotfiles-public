@@ -1,0 +1,18 @@
+#!/bin/bash
+
+export WLR_NO_HARDWARE_CURSOR=1
+
+# udiskie
+udiskie -s -A -f pcmanfm -q &
+
+# notification daemon
+dunst &
+
+# set cursor shape
+xsetroot -cursor_name left_ptr
+
+# set xkb map
+setxkbmap -layout us
+
+# todo notification
+$HOME/Scripts/shell/notify-todo
