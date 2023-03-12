@@ -1,0 +1,63 @@
+#!/bin/bash
+#!/bin/sh
+
+Shutdown=" Shutdown"
+Reboot=" Reboot"
+Log_out=" Logout"
+Sleep="⏾ Sleep"
+message=0
+
+executectl(){
+  if [ "$2" = "" ]; then
+    doas systemctl "$1"
+    send "$2"
+  else
+    systemctl "$1"
+  fi
+}
+
+authenticate(){
+  message="Failed to $1 system via logind!. Another session is running!"
+  show_menu
+}
+
+select_option(){
+  if [ "$Option" = "" ]; then
+    exit
+  else
+    Option_text="$(echo "$Option" | awk '/A ... /{A=1;next}{print $2}')"
+    Ans=$(echo -e "Yes\nNo" | uniq -u | rofi -dmenu -i -selected-row 1 -p "$Option:" -mesg "Are you sure, you want to $Option_text?" )
+    if [ "$Ans" = "Yes" ]; then
+      if [ "$Option" = "$Shutdown" ]; then
+        state="poweroff"
+      elif [ "$Option" = "$Reboot" ]; then
+        state="reboot"
+      elif [ "$Option" = "$Log_out" ]; then
+        bspc quit
+      elif [ "$Option" = "$Sleep" ]; then
+        state="suspend"
+      fi
+      if executectl $state; then echo ""
+      else
+        authenticate $state
+      fi
+    else
+      show_menu
+    fi
+  fi
+}
+
+show_menu(){
+  if [ "$message" != "0" ]; then
+    Option=$(echo -e "$Shutdown\n$Reboot\n$Log_out\n$Sleep" | uniq -u | rofi -dmenu -i -selected-row 3 -p "⭘  Power menu:" -mesg "$message" )
+  else
+    Option=$(echo -e "$Shutdown\n$Reboot\n$Log_out\n$Sleep" | uniq -u | rofi -dmenu -i -selected-row 3 -p "⭘  Power menu:" )
+  fi
+  select_option
+}
+
+case "$1" in
+  *)
+    show_menu
+    ;;
+esac

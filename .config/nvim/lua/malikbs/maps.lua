@@ -38,7 +38,8 @@ keymap.set('n', 'w<left>', '<C-w><')
 keymap.set('n', 'w<right>', '<C-w>>')
 keymap.set('n', 'w<up>', '<C-w>+')
 keymap.set('n', 'w<down>', '<C-w>-')
-
 -- Increment/decrement
 keymap.set('n', '+', '<C-a>')
 keymap.set('n', '-', '<C-x>')
+-- change all founded text
+keymap.set('n', 'cc', ':set gd <return><esc>*:%s//', opts)

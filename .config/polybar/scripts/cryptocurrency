@@ -60,8 +60,14 @@ update_info(){
     fi
     echo " $(echo -e "on $date\n$info")" > "$2"
     echo "$coinPercentage" >> "$2"
+
+    # write to bar
+    echo "   $coinPercentage"
   else
     coinPercentage="$(cat "$2" | awk 'FNR==7{print $1}')"
+
+    # write to bar
+    echo "   $coinPercentage"
   fi
 }
 
@@ -72,16 +78,22 @@ else
   dirFile="$HOME/cryptoinfo.log"
 fi
 if [ -f "$dirFile" ]; then
-  echo -ne ""
+  noDirFile=0
+  coinPercentage="$(cat "$dirFile" | awk 'FNR==7{print $1}')"
+  echo "   $coinPercentage"
 else
-  update_info "btc" "$dirFile"
+  noDirFile=1
 fi
 
 # command
 if [ "$1" == "notify" ]; then
-  title="$(cat $dirFile | awk 'FNR==1')"
-  body="$(cat $dirFile | awk 'FNR==2{for(i=1;i<5;i++){getline; print $1" "$2" "$3"\t"$4" "$5}}')"
-  notify-send -r 222 "$title" "$body"
+  if [ $noDirFile -eq 0 ]; then
+    title="$(cat $dirFile | awk 'FNR==1')"
+    body="$(cat $dirFile | awk 'FNR==2{for(i=1;i<5;i++){getline; print $1" "$2" "$3"\t"$4" "$5}}')"
+    notify-send -r 222 "$title" "$body"
+  else
+    notify-send -r 222 "History not found !" "Cannot access the file history !"
+  fi
 elif [ "$1" == "update" ]; then
   if [ "$2" != "" ]; then
     coininfo="$2"
@@ -95,8 +107,6 @@ elif [ "$1" == "update" ]; then
   # updating
   update_info "$coininfo" "$dirFile"
 
-  # write to bar
-  echo "   $coinPercentage"
 else
   echo "Usage: cryptocurrency <command>"
   echo ""

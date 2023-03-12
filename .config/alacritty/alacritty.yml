@@ -54,13 +54,13 @@ mouse:
 # ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
 window:
-  opacity: 0.4
+  opacity: 0.75
   title: Alacritty
   startup_mode: Windowed
   dynamic_title: false
   padding:
-    x: 7
-    y: 7
+    x: 14
+    y: 14
   decorations: none
 
   # normal

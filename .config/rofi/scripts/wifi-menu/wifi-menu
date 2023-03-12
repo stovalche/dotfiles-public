@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+
+used_interface="$(nmcli device | grep -w "connected" | awk '{print $1}')"
+if [ "$used_interface" = "" ]; then
+  used_interface="none"
+fi
+connected=$(nmcli -fields WIFI g)
+current_connected="$(echo $(nmcli device | awk "/$used_interface/{print \$4\" \"\$5\" \"\$6\" \"\$7\" \"\$8}") | tr -d '-' | xargs)"
+if [ "$current_connected" = "" ]; then
+  current_connected="none"
+fi
+connection=$(echo -e "Device: $used_interface\nConnection: $current_connected")
+
+options(){
+  if [ "$chosen_network" = "" ]; then
+    exit
+  elif [ "$chosen_network" = "  Power" ]; then
+    nmcli radio wifi on
+    notify-send " Wi-Fi Setting" "Turning on Wi-Fi..."
+  elif [ "$chosen_network" = "  Power" ]; then
+    nmcli radio wifi off
+    notify-send " Wi-Fi Setting" "Turning off Wi-Fi..."
+  elif [ "$chosen_network" = "$delete" ]; then
+    list_connection=$(nmcli --fields NAME connection | awk '(NR>1)' | sed "/Wired*/d")
+    chosen_network_del=$(echo -e "$list_connection" | uniq -u | rofi -dmenu -i -selected-row 0 -p "  Connection: ")
+    chosen_id_del=$(echo "${chosen_network_del}" | xargs)
+    if [ "$chosen_network_del" = "" ]; then
+      show_menu
+    else
+      nmcli con del "$chosen_id_del"
+      notify-send " Wi-Fi Connection" "Connection with \"$chosen_id_del\" successfully deleted!"
+    fi
+  elif [ "$chosen_network" = "勒  Refresh" ]; then
+    show_menu
+  else
+    # Message to show when connection is activated successfully
+    success_message="You are now connected to the Wi-Fi network \"$chosen_id\"."
+    unsuccess_message="Connection activation failed. Wrong password!"
+    # Get saved connections
+    saved_connections=$(nmcli -g NAME connection)
+    if [[ $(echo "$saved_connections" | grep -w "$chosen_id") = "$chosen_id" ]]; then
+      nmcli connection up id "$chosen_id" | grep "successfully" &&\
+        notify-send " Wi-Fi Connection" "Connection Established, $success_message"
+    else
+      if [[ "$chosen_network" =~ "" ]]; then
+        wifi_password=$(rofi -dmenu -password -p " Password:" -mesg "$chosen_id" )
+      fi
+      if [ "$wifi_password" != "" ]; then
+        if [[ $(nmcli device wifi connect "$chosen_id" password "$wifi_password" | grep "failed") ]]; then
+          notify-send " Wi-Fi Connection" "$unsuccess_message" &&\
+          nmcli con del "$chosen_id"
+        else
+          notify-send " Wi-Fi Connection" "Connection Established, $success_message" &&\
+          if [[ ! $(echo "$(cat $(dirname $0)/wifi.log | awk "/Warkop sham2/{getline; print \$2\" \"\$3\" \"\$4\" \"\$5\" \"\$6}" | xargs )" | grep -w "$wifi_password") ]]; then
+            echo -e "SSID: $chosen_id\nPASS: $wifi_password\n----------" >> $(dirname $0)/wifi.log
+          fi
+        fi
+      else
+        show_menu
+      fi
+    fi
+  fi
+}
+
+show_menu(){
+  # Get a list of available wifi connections and morph it into a nice-looking list
+  wifi_list=$(nmcli --fields "SECURITY,SSID" device wifi list | sed 1d | sed 's/  */ /g' | sed -E "s/WPA*.?\S/ /g" | sed "s/^--/ /g" | sed "s/  //g" | sed "/--/d")
+
+  if [[ "$connected" =~ "enabled" ]]; then
+    toggle="  Power"
+    header="  Settings/SSID: "
+  elif [[ "$connected" =~ "disabled" ]]; then
+    toggle="  Power"
+    header="  Settings:"
+  fi
+  delete="  Delete connection"
+  refresh="勒  Refresh"
+
+  # Use rofi to select wifi network
+  if [[ "$connected" =~ "enabled" ]]; then
+    chosen_network=$(echo -e "$toggle\n$delete\n$wifi_list\n$refresh" | uniq -u | rofi -dmenu -i -selected-row 2 -p "$header" -mesg "$connection")
+  else
+    chosen_network=$(echo -e "$toggle" | uniq -u | rofi -dmenu -i -selected-row 2 -p "$header" )
+  fi
+  # Get name of connection
+  chosen_id=$(echo "${chosen_network:3}" | xargs)
+  options
+}
+
+if [[ "$connected" =~ "enabled" ]]; then
+  notify-send " Wi-Fi" "Getting list of available Wi-Fi networks..."
+fi
+
+case "$1" in
+  *)
+    show_menu
+    ;;
+esac

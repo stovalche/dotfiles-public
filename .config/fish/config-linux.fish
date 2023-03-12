@@ -4,8 +4,8 @@
 # aliases
 alias unorun "/home/malikbs/Scripts/shell/unocompiler/.compiler.sh"
 alias dotf "/home/malikbs/Scripts/shell/dotf/src/main.sh" #backup to .dotfiles
-alias yt "youtube-dl --no-check-certificate --add-metadata -ic" # <download video link>
-alias yta "youtube-dl --no-check-certificate -x --audio-format mp3" # <download video link> && convert to audio
+alias yt "yt-dlp -f 22" # download video from yt video link
+alias yta "yt-dlp -f bestaudio -x --audio-format mp3  --audio-quality 160K --output '%(title)s.%(ext)s'" # convert video to audio from yt video link
 alias img "/home/malikbs/Scripts/shell/img2term/img2term"
 alias ino "arduino-cli"
 alias feh "feh -d -s -. --image-bg=#000000 --no-jump-on-resort --sort filename"
