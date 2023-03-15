@@ -29,7 +29,7 @@ update_info(){
   # write to cache file
   if [ "$coinPercentage" != "" ]; then
     # scaling float percentage from x.xx to x.x
-    if [[ $(echo $coinPercentage | grep "0\.") ]]; then
+    if [[ $(echo $coinPercentage | grep "0\.") ]] && [ $(echo $coinPercentage | tr '.' ' ' | awk '{print $1}') == '0' ]; then
       # if negative or positive
       # scale from x.xx to .x and change a float form from .x to 0.x
       if [[ $(echo $coinPercentage | grep '-') ]]; then

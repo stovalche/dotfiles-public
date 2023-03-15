@@ -3,7 +3,10 @@ if [ "$Cmd" = "--head" ]; then
     Files_[0]="$HOME/Android/Sdk/platforms/android-30/skins/IphoneX_avd_skin/*"
     Files_Destination_[0]="Android/Sdk/platforms/android-30/skins/androidx"
     Dirs_[0]="$HOME/Scripts/"
+    Dirs_[1]="/etc/ly/,
+              /etc/default/,"
     Dirs_Destination_[0]=""
+    Dirs_Destination_[1]="etc"
   fi
 fi
 
@@ -13,7 +16,7 @@ Files_[2]="$HOME/.bashrc"
 Files_Destination_[1]=""
 Files_Destination_[2]="bash-env"
 
-Dirs_[1]="$HOME/.config/fish/,
+Dirs_[2]="$HOME/.config/fish/,
           $HOME/.config/nvim/,
           $HOME/.config/tmux/,
           $HOME/.config/polybar/,
@@ -25,8 +28,7 @@ Dirs_[1]="$HOME/.config/fish/,
           $HOME/.config/picom/,
           $HOME/.config/dunst/,
           $HOME/.config/neofetch/,
-          $HOME/.config/rofi/,
-          $HOME/.config/sway"
-Dirs_Destination_[1]=".config"
+          $HOME/.config/rofi/"
+Dirs_Destination_[2]=".config"
 
 LogMax=50
