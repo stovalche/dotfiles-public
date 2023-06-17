@@ -1,0 +1,75 @@
+#!/bin/sh
+#
+# this is custom script to control volume with an icon and a bar level customed for dunst
+#
+# requirements:
+# - dunst
+
+# first declared vars
+bar_length=302
+sink_nr="$(pacmd list-sinks | awk '/*/{print $3}')"
+volume_level=$(pacmd list-sinks | awk '/*/ {for(i=1; i<=7; i++) {getline; print}}' | awk '/\tvolume:/{print $5}' | tr -d '%')
+get_name="$(pacmd list-sinks | awk '/*/ {for(i=1; i<=7; i++) {getline; print}}' | awk '/name/{print $2}' | tr -d "<,>")"
+muted=$(pacmd list-sinks | awk '/*/ {for(i=1; i<=15; i++) {getline; print}}' | awk '/muted/{print $2}' | xargs)
+
+# get an icon based on the volume percentage
+get_icon(){
+  if [ "$1" = "mute" ]; then
+    icon=" "
+  elif [ $1 -le 34 ]; then
+    icon=" "
+  elif [ $1 -le 69 ]; then
+    icon=" "
+  else
+    icon=" "
+  fi
+}
+
+# command
+if [ "$1" = "--mute-toggle" ]; then
+  command1="set-sink-mute"
+  command2="toggle"
+  if [ $muted = 'yes' ]; then
+    get_icon $volume_level
+    icon="$icon Unmuted"
+  else
+    get_icon mute
+    icon="$icon Muted"
+  fi
+elif [ "$1" = "--up" ]; then
+  command1="set-sink-volume"
+  if [ $volume_level -le 95 ]; then
+    command2="$(($volume_level + 5))%"
+  elif [ $volume_level -le 99 ]; then
+    command2="$(($volume_level + 1))%"
+  fi
+elif [ "$1" = "--down" ]; then
+  command1="set-sink-volume"
+  command2="$(($volume_level - 5))%"
+fi
+
+# changing the volume
+pactl $command1 $sink_nr $command2
+
+# redeclare after changing the volume
+volume_level=$(pacmd list-sinks | awk '/*/ {for(i=1; i<=7; i++) {getline; print}}' | awk '/\tvolume:/{print $5}' | tr -d '%')
+volume_level_percent=$volume_level # then volume level maks is 100 which the same with %
+
+# bar length is 300, which is match the dunst length 305 with the icon
+bar_level_percent=$(($bar_length/100*$volume_level_percent))
+bar="$(seq -s "─" 0 $(($bar_level_percent / 9)) | sed 's/[0-9]//g')"
+
+# update the icon after some process
+if [ "$1" != "--mute-toggle" ]; then
+  if [ $muted = 'yes' ]; then
+    get_icon mute
+  else
+    get_icon $volume_level
+  fi
+else
+  # if the arg $1 is --mute-toggle, the bar should be empty
+  bar=""
+fi
+
+# dunst notify-send
+notify-send -u normal -r 505 "$icon $bar"

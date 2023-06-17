@@ -1,0 +1,43 @@
+#!/bin/sh
+
+File_name="screenshot-$(date "+%y-%m-%d_%H-%M-%S")"
+Icon=" "
+Info="$Icon Screenshot taken!"
+
+if [ -d $HOME/Pictures ]; then
+  if [ -d $HOME/Pictures/Screenshot ]; then
+    output="$HOME/Pictures/Screenshot/"
+  elif [ -d $HOME/Pictures/screenshot ]; then
+    output="$HOME/Pictures/screenshot/"
+  else
+    output="$HOME/Pictures/$File_name"
+  fi
+elif [ -d $HOME/pictures ]; then
+  if [ -d $HOME/pictures/Screenshot ]; then
+    output="$HOME/pictures/Screenshot/"
+  elif [ -d $HOME/pictures/screenshot ]; then
+    output="$HOME/pictures/screenshot/"
+  else
+    output="$HOME/pictures/"
+  fi
+else
+  output="$HOME/"
+fi
+
+if [ -f "$output$File_name.png" ]; then
+  count=$(($(ls "$output" | grep -c "$File_name") + 1))
+  count_file="_$count"
+  output="$output$File_name$count_file.png"
+  Info="$Icon $count Screenshots taken!"
+else
+  output="$output$File_name.png"
+fi
+
+case "$1" in 
+  "select") scrot "$output" --select --line mode=edge -d 1 || exit ;;
+  "window") scrot "$output" --focused --border || exit ;;
+  *) scrot "$output" || exit ;;
+esac
+
+sleep 1
+notify-send -r 1001 -u normal "$Info" -t 2000 -i "$output"

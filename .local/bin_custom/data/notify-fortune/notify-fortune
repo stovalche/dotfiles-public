@@ -1,0 +1,47 @@
+#!/usr/bin/sh
+
+# Default writer to show
+defaultWriter="$(whoami)"
+
+dirLocation="$(dirname $0)/data/notify-fortune"
+if [ -d $dirLocation ]; then echo ""
+elif [ -d "$dirLocation/notify-fortune" ]; then
+  dirLocation="$dirLocation/notify-fortune"
+else
+  dirLocation="$(dirname $0)"
+fi
+
+sumIcon=$(ls -l -A $dirLocation/icon/ | grep -c .png)
+getIndexImage(){
+  randomIndex=$(shuf -i 0-11 -n 1)
+  if [ -f "$dirLocation/icon/$randomIndex.png" ]; then
+    iconPath="$dirLocation/icon/$randomIndex.png"
+    break
+  else
+    getIndexImage
+  fi
+}
+getIndexImage
+
+for i in 0 1 2 3 4 5 6 7 8 9; do
+  wholeQuote="$(fortune)"
+  countChar="$(echo "$wholeQuote" | wc -c )"
+  quoteLine="$(echo "$wholeQuote" | wc -l )d"
+  if [ $countChar -le 120 ]; then
+    if [ $countChar -le 60 ]; then
+      timeQuote=6000
+    else
+      timeQuote=$(($(echo "scale=2 ; $(( $countChar / 10))" | bc) * 1000))
+      timeQuote=$(($timeQuote + 1000))
+    fi
+    if [ "$(echo $wholeQuote | awk '/--/{print}' | tr -d '\n')" = "" ]; then
+      Heading="$defaultWriter"
+      Quote="$(echo "$wholeQuote" | tr -d '\t\n')"
+    else
+      Heading="$(echo "$wholeQuote" | awk '/--/{print}' | tr -d '\t' | tr '\n' ' ' | tr -d '-' | xargs)"
+      Quote="$(echo "$wholeQuote" | sed $quoteLine | tr -d '\t\n')"
+    fi
+    notify-send -u normal "  $Heading" "$Quote" -t $timeQuote -i "$iconPath"
+    break
+  fi
+done

@@ -1,0 +1,67 @@
+#!/bin/sh
+
+input_audio_device=$(pactl list short sources | awk '/input/{print $2}')
+
+if [ "$input_audio_device" = "" ]; then
+  exit 1
+fi
+scan_resolution="$(xrandr | awk '/*/{print $1}')"
+if [ "$scan_resolution" = "" ]; then
+  screen_resolution="1366x768"
+else
+  screen_resolution="$scan_resolution"
+fi
+
+#File_name="screencast-$(date "+%y-%m-%d-%T").mp4"
+if [ "$1" = "" ]; then
+  echo -e "File name should be declared!\nUsage: screencast \"<file-nam.mp4>\""
+else
+  File_name="$1"
+fi
+
+if [ -d $HOME/Videos/recorded ]; then
+  Output="$HOME/Videos/recorded/$File_name"
+elif [ -d $HOME/Videos ]; then
+  Output="$HOME/Videos/$File_name"
+else
+  Output="$HOME/$File_name"
+fi
+
+screencasting(){
+  # ffmpeg command for the screencasting
+  #ffmpeg -y -f x11grab -s "$screen_resolution" -i :0.0 -f pulse -i "$input_audio_device" "$Output"
+  #ffmpeg -y -f x11grab -i :0.0 -f pulse -i "$input_audio_device" "$Output"
+  #ffmpeg -y -f x11grab -framerate 60 -fflags nobuffer -flags low_delay -probesize 32 -analyzeduration 0 -i :0.0 -f pulse -i "$input_audio_device" "$Output"
+  #ffmpeg -y -f x11grab -framerate 60 -fflags nobuffer -flags low_delay -i :0.0 -f pulse -i "$input_audio_device" "$Output"
+
+  #ffmpeg -f x11grab -s "$screen_resolution" -r 30 -i :0.0 -f pulse -i "$input_audio_device" -vcodec libx264 -s "$screen_resolution" -acodec libmp3lame -ab 128k -ar 44100 -threads 0 -f mp4 "$Output"
+
+  ffmpeg -f x11grab -s "$screen_resolution" -r 30 -i :0.0 -f pulse -i "$input_audio_device" -vcodec libx264 -s "$screen_resolution" -acodec libmp3lame -ab 128k -ar 44100 -threads 0 -f mp4 -preset ultrafast -tune zerolatency "$Output"
+
+  # before you're doing screencast with audio, make your audio input device is works
+  # pulse audio base can be check it using command
+  # # pactl list sort sources
+  # and then set the audio input device, for example
+  # # pactl set-source-port alsa_input.pci-0000_00_09.2.analog-stereo analog-input-internal-mic
+  # # pactl set-source-mute alsa_input.pci-0000_00_09.2.analog-stereo 0
+  # # pactl set-source-volume alsa_input.pci-0000_00_09.2.analog-stereo 100%
+}
+
+# toggle screencasting
+if [ "$File_name" != "" ]; then
+  status_pid="$(pgrep ffmpeg | awk '{print $1}')"
+  status=$(echo "${status_pid}" | xargs)
+  if [ "$status" != "" ]; then
+    pkill ffmpeg
+    sleep 1
+    notify-send "  Screencast report" "Video record stopped! the result saved as $Output"
+  else
+    for i in 3 2 1; do
+      sleep 1
+      notify-send -r 555 "  Screencast report" "Video record started, after $i sec!" -t 1100
+    done
+    sleep 1
+    echo "The result is will be save as $Output"
+    screencasting
+  fi
+fi

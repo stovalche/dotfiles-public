@@ -1,0 +1,57 @@
+#!/bin/sh
+
+# first declared args
+window_id="$1"
+window_class="$2"
+window_instance="$3"
+if [ "$(type "xtitle")" ]; then
+  window_title="$(xtitle $window_id)"
+fi
+if [ "$(xprop -id $window_id)" ]; then
+  window_information="$(xprop -id $window_id)"
+fi
+
+# looking for the window class name if the $2 arg is nothing
+if [ "$window_class" = "" ]; then
+  window_class="$(echo "$window_information" | awk '/WM_CLASS/{print $3}' | tr -d ',"')"
+  window_title="$window_class"
+  window_instance="$window_class"
+fi
+
+# if the class still nothing, assume the class is the _NET_WM_NAME
+if [ "$window_class" = "" ]; then
+  window_class="$(echo "$window_information" | awk '/_NET_WM_NAME/{print $3}' | tr -d ',"')"
+  window_title="$window_class"
+  window_instance="$window_class"
+fi
+
+# the rules
+case "$window_class" in
+  # floating windows
+  Android*|'Android Emulator -'*|'Save quick-boot state'|Emulator*) # doesn't work, bspwm doesn't recognize what is android emulator's class name
+    echo "state=floating focus=on"
+    ;;
+  # tiled windows
+  [Ss]potify)
+    echo "state=tiled focus=on"
+    ;;
+  # any windows
+  *)
+    # if false, this would be back to the internal rules
+    if [ "$(echo "$window_information" | grep -w _NET_WM_WINDOW_TYPE_DIALOG)" ]; then
+      echo "state=floating focus=on center=true"
+    fi
+    ;;
+esac
+
+# log file
+if [ -d "$HOME/.cache" ]; then
+  cache_dir="$HOME/.cache"
+else
+  cache_dir="$HOME"
+fi
+
+# write a log
+echo "window_id:$window_id\nwindow_class:$window_class\nwindow_instance:$window_instance\nwindow_title:$window_title\nwindow_information:\n$window_information" > "$cache_dir/bspwm.log"
+
+$HOME/.config/bspwm/contoh &

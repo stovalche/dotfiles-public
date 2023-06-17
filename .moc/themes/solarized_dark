@@ -1,0 +1,37 @@
+# this theme would be based on terminal color such as alacritty colors configuration
+
+background           = white    default
+frame                = white    default  dim,bold
+window_title         = white    default  bold
+directory            = white    default
+selected_directory   = default  black
+playlist             = white    default
+selected_playlist    = green    default  bold
+file                 = white    default  
+selected_file        = default  black
+marked_file          = default  default  dim
+marked_selected_file = white    black
+info                 = default  default  dim,bold
+selected_info        = default  default  bold
+marked_info          = default  default  bold
+marked_selected_info = white    default  bold
+status               = white    default
+title                = blue     default  bold
+state                = green    default  dim,bold
+current_time         = default  default  dim,bold
+time_left            = default  default  dim,bold
+total_time           = default  default  bold
+time_total_frames    = default  default  bold
+sound_parameters     = default  default  dim,bold
+legend               = default  default  dim,bold
+disabled             = default  default  dim,bold
+enabled              = default  default  bold
+empty_mixer_bar      = white    default
+filled_mixer_bar     = default  black
+empty_time_bar       = white    default
+filled_time_bar      = default  black
+entry                = white    black
+entry_title          = yellow   default  bold
+error                = red      default  bold
+message              = white    default  dim
+plist_time           = white    default  bold
